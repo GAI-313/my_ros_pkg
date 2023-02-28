@@ -111,3 +111,95 @@ rospy.Publisher('トピック名', メッセージタイプ, キューサイズ)
 rospy.Publisher('東海道新幹線', こだま, queue_size=1)
 ```
 　これを要約すると、東海道新幹線というトピックにこだまというメッセージをキューサイズ１でパブリッシュすように設定するよ。である。
+<br>
+
+　今回は int_count という名前のトピックを作成し、そこに整数メッセージ（Int32）を queue_size 1 で送信するようにするので、以下のように記述する。
+```python
+pub = rospy.Publisher('int_count', Int32, queue_size=1)
+```
+　次に、メッセージを送信する周期を設定する。メッセージ送信周期の設定は、rospy の Rate 関数を使う。
+Rate 関数は引数に周期を指定するので、1Hz （１秒間に１回）で送信するようにする。
+```python
+rate = rospy.Rate(1)
+```
+　最後にカウントするための変数 count の初期値を設定する。
+```python
+count = 0
+```
+　これでパブリッシュするための設定は完了である。次に、実際にメッセージをパブリッシュするためのプログラムを書く。
+まず、このパブリッシュプログラムはユーザーがプログラムを停止するまでメッセージを送信し続けるようにしたいので、以下のようなwhile 文を書く。
+```python
+while not rospy.is_shutdown():
+```
+　これは、ROS が死ぬまでループ留守という意味である。この中にカウンタープログラムを書いていく。
+まずは counter 変数をパブリッシュする部分を書く。
+先程パブリッシュの設定をする Publisher のところで、pub という変数を指定してインスタンス化している。
+つま変数 pub はパブリッシュ設定が盛り込まれたメソッドということである。このメソッドには引数内のデータをメッセージとして飛ばす publish
+関数があるので、これを記述して count 変数を飛ばす。
+```python
+pub.publish(count)
+```
+あとは、変数の変化を確認すうるための print 文と、値を繰り上げるプログラムを書く。
+```python
+print(count)
+count += 1
+```
+　最後に Rate 関数を休ませる Rate.sleep() を末尾に追加して完了である。
+```python
+rate.sleep()
+```
+　以下が int_publisher.py の全体図である。
+```python
+#!/usr/bin/env python3
+
+import rospy
+
+from std_msgs.msg import Int32
+
+# ノードの名前を定義する
+rospy.init_node('int_pub')
+
+# パブリッシュするトピックの名前を指定する
+pub = rospy.Publisher('int_count', Int32, queue_size=1)
+
+# 実行周期を設定する。今回は1秒おきに配信するようにする。
+rate = rospy.Rate(1)
+
+count = 0
+
+while not rospy.is_shutdown():
+    # count 変数をパブリッシュ
+    pub.publish(count)
+
+    print(count)
+    count += 1
+
+    rate.sleep()
+```
+　このプログラムを実行する前に、chmod コマンドでこのプログラムに事項権限を与える必要がある。
+これをしないと ROS が正常にこのプログラムをノードとして扱ってくれない。
+```
+chmod 777 scripts/int_publisher.py
+```
+　そしたら python コマンドで int_publisher.py を実行してみよう。まず新しいターミナルを開いて以下のコマンドを実行しよう
+```
+roscore
+```
+　次に他のターミナルで、以下のコマンドを実行すると、数字が１秒毎にカウントされる。
+```
+source ~/catkin_ws/build/setup.bash
+rosrun my_robot int_publisher.py
+```
+実行結果
+```bash
+$ rosrun my_robot int_publisher.py 
+0
+1
+2
+3
+4
+.
+.
+.
+```
+Control + C でプログラムは停止する。
