@@ -10,6 +10,9 @@ ws ディレクトリの名前はなんでもいいが、src ディレクトリ�
 mkdir -p catkin_ws/src
 ```
 　次に src ディレクトリに移動する。ROS パッケージは src ディレクトリ内で作成する必要があるからである。
+```bash
+cd ~/catkin_ws/src
+```
 catkin_create_pkg コマンドで自分のパッケージを作成する。
 ```bash
 catkin_create_pkg <pkg_name> <依存関係pkg> <依存関係pkg> ...
