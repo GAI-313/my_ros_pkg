@@ -61,7 +61,7 @@ CMakeLists.txt  include  package.xml  src
 　今はこれらのファイルに関しては無視。新たに２つディレクトリを作成する。今回作成するディレクトリは以下２つである。
 
 - scripts : python スクリプトを記述するディレクトリ。
-- msg : 自作メッセージを記述するディレクトリ。
+- msg : 自作メッセージを記述するディレクトリ。（後ほど使用する）
 
 　コマンドで２つのディレクトリを生成する。
 ```bash
@@ -89,6 +89,7 @@ mkdir scripts msg
 ```bash
 nano scripts/int_publisher.py
 ```
+<a id='2.s'></a>
 　プログラムを書く準備ができたら、まずはシバンを記述しよう。
 シバンとは、俺は Python 実行ファイルだぞ！と自己主張するための名札のようなものである。これを書かないと ROS が認識してくれない。
 ```python
@@ -212,3 +213,86 @@ $ rosrun my_robot int_publisher.py
 .
 ```
 Control + C でプログラムは停止する。
+<br>
+
+<a id='2.p'></a>
+　つぎに、実際にデータがパブリッシュされているかどうか確認してみよう。新たにターミナルを開いて、rostopic コマンドを使ってみよう。
+rostopic コマンドを使うことで、ROS から提供されているトピック情報を知ることができる。
+rostopic の list コマンドを使うと、現在発行されているトピックmウィが一覧として表示される。
+```bash
+rostopic list
+```
+　すると、以下のように先ほど作成した int_publisher.py から発行されている int_count というトピックが配信されているのがわかる。
+```bash
+$ rostopic list
+/int_count
+/rosout
+/rosout_agg
+```
+　int_count トピックは、int_publsher.py の以下の行で定義しているのが対応している。
+```python
+pub = rospy.Publisher('int_count', Int32, queue_size=1)
+```
+　特定のトピックのメッセージを見たい場合は、rostopic の echo コマンドをつかうと配信内容を参照できる
+```bash
+rostopic echo /<topic_name>
+```
+　int_count トピックの内容を見てみよう
+```bash
+rostopic echo /int_count
+```
+　すると int_count トピックからのメッセージが表示される。
+```bash
+$ rostopic echo /int_count
+data: 10
+---
+data: 11
+---
+.
+.
+.
+```
+　次はサブスクライバーをつくってみよう
+
+## サブスクラィバーを作ってみよう
+　サブスクライバーとは、購読者のことを指す。つまりパブリッシャー（配信者）からのデータを受け取るものである。
+Youtube の動画配信者がパブリッシャーでその動画の視聴者がサブスクライバーという感じ。
+<br>
+
+　今回作るサブスクライバープログラムは、先ほど作成した int_publisher.py から発行された int_count 
+トピックを取得しこれを表示するプログラムを作成する。
+以下のような結果が出るようにする。
+```bash
+$ rosrun my_robot int_subscriber,oy
+int_countトピックからのメッセージ
+.
+.
+.
+```
+　scripts ディレクトリに新たなサブスクライバープログラム ```int_subscriber.py``` を作る。
+```bash
+# nano を使って編集する場合
+nano scripts/int_subscriber.py
+```
+　まずは、
+[先程教えた](#2.s)  
+シバンを書こう。
+```python
+#!/usr/bin/env python3
+```
+　次に ROS を python で扱うために必要なライブラリ rospy をインポートしよう。
+```
+ipmort rospy
+```
+　ここで、一旦プログラムを書く手を止めて、これからサブスクライブする int_count トピックについて知っておこう。roscore を立てて int_publisher ノードを実行しよう。
+
+1. roscore を立てる
+    ```bash
+    roscore
+    ```
+2. 当たらにターミナルを立てて、そこに int_publisher ノードを立てる。
+    ```bash
+    rosrun <自作パッケージの名前> int_publisher.py
+    ```
+
+　すると、[前回実行した](#2.p) ようにメッセージが発行される。
