@@ -310,7 +310,7 @@ rostopic info <トピック名>
 rostopic info /int_count
 ```
 と入力する。すると、以下のように int_count トピックに関する情報が表示される。
----bash
+```bash
 Type: std_msgs/Int32
 
 Publishers: 
