@@ -107,8 +107,7 @@ mkdir scripts msg
 　早速パブリッシャーを作ってみよう。パブリッシャー（Publisher）とは、配信者という意味を持つ。配信者はその名の通りデータを配信する。
 ここでは、整数を１秒間隔でカウントして送信するパブリッシャーを作ってみよう。
 ```
-これから作るパブリッシャの挙動
-0
+Behavior of publishers that will be created0
 1
 2
 3
@@ -325,7 +324,7 @@ data: 11
 以下のような結果が出るようにする。
 ```bash
 $ rosrun my_robot int_subscriber,oy
-int_countトピックからのメッセージ
+mssage for int_count topic
 .
 .
 .
