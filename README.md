@@ -1,4 +1,5 @@
 # my_robot 〜自作パッケージでロボットを作る〜
+> It was too much trouble to rewrite everything in English, so **please use a web translation tool to translate it and view it.**
 
 <a id='0'></a>
 ## パッケージのビルド
@@ -25,10 +26,10 @@ cd ~/catkin_ws/src
 ```
 catkin_create_pkg コマンドで自分のパッケージを作成する。
 ```bash
-catkin_create_pkg <pkg_name> <依存関係pkg> <依存関係pkg> ...
+catkin_create_pkg <pkg_name> <dependence_pkg> <dependence_pkg> ...
 ```
 - **<pkg_name>** には自分の好きなパッケージの名前にする。ここでは my_robot という名前にした。
-- **<依存関係pkg>** には、これから作成するパッケージに関わる他のパッケージまたはライブラリたちを指定する。<br>
+- **<dependence_pkg>** には、これから作成するパッケージに関わる他のパッケージまたはライブラリたちを指定する。<br>
 　基本的に ROS 環境内で Python と c++ を使うには、
 **rospy** 
  と 
@@ -150,14 +151,14 @@ rospy.init_node('int_pub')
 　次に、メインであるパブリッシュ（配信）設定をするプログラムを書く。パブリッシャーの設定は rospy の Publisher 関数でできる。
 Publisher 関数は、以下3つの引数を必要とする。
 ```python
-rospy.Publisher('トピック名', メッセージタイプ, キューサイズ)
+rospy.Publisher('topic name', message type, queue_size)
 ```
 　トピック名とは、電車で言うところの路線名である。メッセージタイプは電車で言うところの電車の名前である。キューサイズはちょっとよくわからん。
 例えをコロコロ変えてしまうが、例えば Publisher 関数の引数それぞれ以下のように設定したとしよう。
 ```python
-rospy.Publisher('東海道新幹線', こだま, queue_size=1)
+rospy.Publisher('A', B, queue_size=1)
 ```
-　これを要約すると、東海道新幹線というトピックにこだまというメッセージをキューサイズ１でパブリッシュすように設定するよ。である。
+　これを要約すると、A というトピックに B というメッセージをキューサイズ１でパブリッシュすように設定するよ。である。
 <br>
 
 　今回は int_count という名前のトピックを作成し、そこに整数メッセージ（Int32）を queue_size 1 で送信するようにするので、以下のように記述する。
@@ -203,19 +204,19 @@ import rospy
 
 from std_msgs.msg import Int32
 
-# ノードの名前を定義する
+# Define the node name
 rospy.init_node('int_pub')
 
-# パブリッシュするトピックの名前を指定する
+# set a topic name for publish
 pub = rospy.Publisher('int_count', Int32, queue_size=1)
 
-# 実行周期を設定する。今回は1秒おきに配信するようにする。
+# set execute cycle. Here, the execution period is set to 1 Hz.
 rate = rospy.Rate(1)
 
 count = 0
 
 while not rospy.is_shutdown():
-    # count 変数をパブリッシュ
+    # publish the count valiable
     pub.publish(count)
 
     print(count)
@@ -252,7 +253,7 @@ $ rosrun my_robot int_publisher.py
 Control + C でプログラムは停止する。<br>
 　rosrun コマンドの意味について説明しよう。rosrun コマンドでは以下のようなオプションをもつ。
 ```bash
-rosrun <パッケージ名> <そのパッケージの中にあるノードファイル>
+rosrun <pkg name> <node file in this pkg>
 ```
 　先程のコマンド（ ```rosrun my_robot int_publisher.py``` ）を読み解くとこうなる。
 ```
@@ -352,7 +353,7 @@ ipmort rospy
     ```
 2. 当たらにターミナルを立てて、そこに int_publisher ノードを立てる。
     ```bash
-    rosrun <自作パッケージの名前> int_publisher.py
+    rosrun <pkg name> int_publisher.py
     ```
     <a id='3.s3'></a>
 3. 新たにターミナルを立てて rostopic コマンドを使って int_publisher から発行されている int_count メッセージを取得する。
@@ -362,7 +363,7 @@ ipmort rospy
 
 　すると、[前回実行した](#2.p) ようにメッセージが発行される。ここで、**[手順３](#3.s3)** で実行したコマンドを中止して、以下のコマンドを実行してほしい。
 ```bash
-rostopic info <トピック名>
+rostopic info <topic name>
 ```
 　この ```info``` コマンドは、対象のトピックに関する情報を確認することができるコマンドである。ここでは int_count トピックを知りたいので、
 ```bash
@@ -379,12 +380,12 @@ Subscribers: None
 ```
 　上記のテキストは、以下のような意味を持つ。
 ```bash
-このトピックが使用しているメッセージタイプ：std_msgs の Int32
+Message type used by this topic.. ：Int32 in std_msgs
 
-このトピックを配信しているノード：
+send it by：
 /int_pub
 
-このトピックを購読しているノード：誰もいねぇ
+Subscribed this topic by：Nothing
 ```
 　ここでわかったことは、**これから取得するトピック（int_count）は、std_msgs の Int32 を使用しており、これを飛ばしているパブリッシャーは int_pub というノードである** ということである。作った本人だからそんなのわかると思うかもしれないが、もしこれが他が作ったプログラムからのメッセージを知りたい場合にはとても役に立つ。
 それでは int_subscriber の作成に戻ろう。<br>
@@ -399,15 +400,15 @@ rospy.init_node('int_sub')
 ```
 　そして、新たな関数 ```Subscriber``` を使う。この関数を使うことで、トピックを持ってくることができる。Subscriber トピックは、以下の引数を必要とする。
 ```python
-rospy.Subscriber(<トピック名>, <メッセージタイプ>, <コールバック関数>)
+rospy.Subscriber(<topic name>, <message type>, <callback finction name>)
 ```
 　トピック名は、今回 int_count というトピックからのメッセージを知りたいので、str で int_count と指定しよう。
 ```python
-rospy.Subscriber('int_count', <メッセージタイプ>, <コールバック関数>)
+rospy.Subscriber('int_count', <message type>, <callback finction name>)
 ```
 　つぎに、メッセージタイプ。これは取得するメッセージの種類を指定する。今回取得する int_count からのメッセージの種類は、先程の作業でわかっているので、
 ```pyton
-rospy.Subscriber('int_count', Int32, <コールバック関数>)
+rospy.Subscriber('int_count', Int32, <callback finction name>)
 ```
 　最後に、コールバック関数を設定する。ここで言うコールバック関数とは、指定されたトピックを取得したときに実行する関数のことである。コールバック関数の名前は好きにしていい。ここでは int_cb という名前にする。
 ```pyton
@@ -417,18 +418,33 @@ rospy.Subscriber('int_count', Int32,　int_cb)
 
 　例で作ったコールバック関数の名前は int_cb なので、int_cb 関数を作成する。
 ```python
-# rospy.Subscriber() より上にこの関数を作ろう
+# Let's create this function below rospy.Subscriber()
 def int_cb(data):
 ```
 　コールバックとして使用する関数には、かならずサブスクライブされたトピックからのメッセージがくるので、引数を書こう。今回は特に取得したメッセージを同化するわけでもないので、ちゃんとメッセージが取得できたかを確認するために print 文をかく。
 ```python
-# rospy.Subscriber() より上にこの関数を作ろう
+# Let's create this function below rospy.Subscriber()
 def int_cb(data):
     print(data)
 ```
 　最後に、rospy,Sbscriber() の下に、コールバック関数を常に実行させるようにすることができる関数。spin 関数を書いて完了。
 ```python
-# rospy.Subscriber() より下にこの関数を作ろう
+# Let's create this function below rospy.Subscriber()
+rospy.spin()
+```
+全体を見るとこんなふうになる。
+```python
+#!/usr/bin/env python3
+
+import rospy
+
+from std_msgs.msg import Int32
+
+def int_cd(data):
+    print(data)
+
+rospy.init_node('int_sub')
+rospy.Subscriber('/int_count', Int32, int_cd)
 rospy.spin()
 ```
 　書き終わったら権限を加えて roscore して int_publisher を実行してこのプログラム（int_subscriber）を実行しよう。するとちゃんと通信できることが確認できる。<br>
